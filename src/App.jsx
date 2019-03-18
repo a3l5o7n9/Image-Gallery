@@ -30,11 +30,17 @@ class App extends Component {
     const searchTerm = event.target.value;
     if (searchTerm !== undefined && searchTerm !== "")
     {
+      const cachedResult = localStorage.getItem(searchTerm);
+      if(cachedResult) {
+        this.setState({ searchTerm, images: JSON.parse(cachedResult) });
+        return;
+      }
+      
       fetch("https://api.flickr.com/services/rest/?method=flickr.photos.search&safe_search=1&format=json&nojsoncallback=1&api_key=bac9f1ccfd854f27894fd47c4f01b1e8&content_type=1&is_getty=1&text=" + searchTerm)
         .then(res => res.json())
         .then(
           (result) => {
-            console.log(result.photos.photo);
+            localStorage.setItem(searchTerm, JSON.stringify(result.photos.photo));
             this.setState({searchTerm, images: result.photos.photo});
           },
           (error) => {
