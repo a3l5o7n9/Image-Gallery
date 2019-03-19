@@ -8,8 +8,30 @@ class App extends Component {
     this.state = {
       searchTerm: "",
       images: [],
+      searchTermsList: [], 
       error: null
     }
+  }
+
+  openSearchTermsList = (event) => {
+    if (this.state.searchTermsList !== undefined && this.state.searchTermsList !== [])
+    {
+      return(
+        <div className="searchTermsSelect">
+          <select value={this.state.searchTerm} onChange={this.searchImages}>
+            {this.showSearchTermsList()}
+          </select>
+        </div>
+      );
+    }
+  }
+
+  showSearchTermsList = () => {
+    return(this.state.searchTermsList.map((searchTermItem) => {
+      return (
+        <option value={searchTermItem}>{searchTermItem}</option>
+      );
+    }));
   }
 
   showImages() {
@@ -35,13 +57,18 @@ class App extends Component {
         this.setState({ searchTerm, images: JSON.parse(cachedResult) });
         return;
       }
-      
+
+      const searchTermsList = [...this.state.searchTermsList];
+
+      searchTermsList.push(searchTerm);
+      localStorage.setItem(searchTermsList, JSON.stringify(searchTermsList));
+
       fetch("https://api.flickr.com/services/rest/?method=flickr.photos.search&safe_search=1&format=json&nojsoncallback=1&api_key=bac9f1ccfd854f27894fd47c4f01b1e8&content_type=1&is_getty=1&text=" + searchTerm)
         .then(res => res.json())
         .then(
           (result) => {
             localStorage.setItem(searchTerm, JSON.stringify(result.photos.photo));
-            this.setState({searchTerm, images: result.photos.photo});
+            this.setState({searchTerm, images: result.photos.photo, searchTermsList });
           },
           (error) => {
             console.log(error);
@@ -60,13 +87,18 @@ class App extends Component {
       <div className="App">
         <div className="AppHeader">
           <h1>Image Gallery</h1>
-          <input 
-            type="text" 
-            name="searchTerm" 
-            value={this.state.searchTerm} 
-            placeholder="search for images...."
-            onChange={this.searchImages} 
-          />
+          <form>
+            <input 
+              type="text" 
+              name="searchTerm" 
+              value={this.state.searchTerm} 
+              placeholder="search for images...."
+              onChange={this.searchImages}
+            />
+            <div className="selectList">
+              {this.openSearchTermsList()}
+            </div>
+          </form>         
         </div>
         <div className="Gallery">
           {this.showImages()}
