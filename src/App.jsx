@@ -13,7 +13,13 @@ class App extends Component {
     }
   }
 
-  openSearchTermsList = (event) => {
+  componentDidMount = () => {
+    const searchTermsList = localStorage.getItem("searchTermsList");
+
+    this.setState({ searchTermsList: ["", ...JSON.parse(searchTermsList)] });
+  }
+
+  openSearchTermsList = () => {
     if (this.state.searchTermsList !== undefined && this.state.searchTermsList !== [])
     {
       return(
@@ -29,7 +35,7 @@ class App extends Component {
   showSearchTermsList = () => {
     return(this.state.searchTermsList.map((searchTermItem) => {
       return (
-        <option value={searchTermItem}>{searchTermItem}</option>
+        <option key={searchTermItem} value={searchTermItem}>{searchTermItem}</option>
       );
     }));
   }
@@ -40,7 +46,7 @@ class App extends Component {
       return(this.state.images.map((image) => {
         const imageUrl = "https://farm" + image.farm + ".staticflickr.com/" + image.server + "/" + image.id + "_" + image.secret + ".jpg";
         return (
-        <div className="Photo">
+        <div className="Photo" key={image.id}>
           <img src={imageUrl} alt="Could not be displayed"/>
         </div>
         )
@@ -61,7 +67,7 @@ class App extends Component {
       const searchTermsList = [...this.state.searchTermsList];
 
       searchTermsList.push(searchTerm);
-      localStorage.setItem(searchTermsList, JSON.stringify(searchTermsList));
+      localStorage.setItem("searchTermsList", JSON.stringify(searchTermsList));
 
       fetch("https://api.flickr.com/services/rest/?method=flickr.photos.search&safe_search=1&format=json&nojsoncallback=1&api_key=bac9f1ccfd854f27894fd47c4f01b1e8&content_type=1&is_getty=1&text=" + searchTerm)
         .then(res => res.json())
