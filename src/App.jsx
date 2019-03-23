@@ -81,7 +81,7 @@ class App extends Component {
 
     if (selectedSearchTerm !== undefined && selectedSearchTerm !== "") {
       if (selectedSearchTerms.includes(selectedSearchTerm)) {
-        selectedSearchTerms.splice(selectedSearchTerms.indexOf(selectedSearchTerm), 1);
+        selectedSearchTerms.splice(selectedSearchTerms.indexOf(selectedSearchTerm), 1);      
       }
       else {
         selectedSearchTerms.push(selectedSearchTerm);
@@ -105,7 +105,7 @@ class App extends Component {
           }
         )
     }
-    else if (selectedSearchTerms === undefined || selectedSearchTerms === []) {
+    else {
       this.setState({ selectedSearchTerms: [""], images: [] });
     }
   }
@@ -121,6 +121,10 @@ class App extends Component {
         )
       }))
     }
+  }
+
+  clearSelection = (event) => {
+    this.setState({ selectedSearchTerms: [] });
   }
 
   render() {
@@ -146,17 +150,22 @@ class App extends Component {
             </div>
             <div className="MultipleTermsSearch">
               <h3>Multiple Terms Search</h3>
-              <div className="searchTypes">
+              <div className="SearchTypes">
                 <select value={this.state.selectedSearchType} onChange={this.changeSearchType}>
                   <option value="all">AND</option>
                   <option value="any">OR</option>
                 </select>
               </div>
-              <div className="selectList">
+              <div className="SelectList">
                 <div className="MultipleSearchTermsSelect">
                   <select multiple={true} value={this.state.selectedSearchTerms} onChange={this.multipleSearchImages}>
                     {this.showSearchTermsList()}
                   </select>
+                </div>
+                <div className="ClearButton">
+                  <button title="ClearSelections" onClick={this.clearSelection}>
+                    Clear Selections
+                  </button>
                 </div>
               </div>
             </div>
